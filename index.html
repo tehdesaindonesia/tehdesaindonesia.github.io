@@ -1035,26 +1035,9 @@
   <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
   <script>
     /* To Disable Inspect Element */
-      $(document).bind("contextmenu",function(e) {
-       e.preventDefault();
-      });
-
-      $(document).keydown(function(e){
-      if(e.which === 123){
-       return false;
-    }
-});
-</script>
-<script language="JavaScript">
-$(document).bind("contextmenu",function(e) {
- e.preventDefault();
-});
-$(document).keydown(function(e){
-    if(e.ctrlKey && (e.which === 83)){
-       e.preventDefault();
-       return false;
-    }
-});
+     document.oncontextmenu = () => {
+        return false
+      }
 </script>
   
   <!-- Main JS File -->

@@ -223,67 +223,91 @@
     <!-- Stats Section -->
     <section id="stats" class="stats section">
 
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
 
-        <div class="row gy-4 align-items-center">
+    <div class="row gy-4 align-items-center">
 
-          <div class="col-lg-5">
-            <img src="assets/img/stats-img.svg" alt="" class="img-fluid">
-          </div>
+      <div class="col-lg-5">
+        <img src="assets/img/stats-img.svg" alt="" class="img-fluid">
+      </div>
 
-          <div class="col-lg-7">
+      <div class="col-lg-7">
 
-            <div class="row gy-4">
+        <div class="row gy-4">
 
-              <div class="col-lg-6">
-                <div class="stats-item d-flex">
-                  <i class="bi bi-emoji-smile flex-shrink-0"></i>
-                  <div>
-                    <span data-purecounter-start="0" data-purecounter-end="232" data-purecounter-duration="1" class="purecounter"></span>
-                    <p><strong>Happy Mitra</strong></p>
-                  </div>
-                </div>
-              </div><!-- End Stats Item -->
-
-              <div class="col-lg-6">
-                <div class="stats-item d-flex">
-                  <i class="bi bi-journal-richtext flex-shrink-0"></i>
-                  <div>
-                    <span data-purecounter-start="0" data-purecounter-end="132" data-purecounter-duration="1" class="purecounter"></span>
-                    <p><strong>Projects</strong></p>
-                  </div>
-                </div>
-              </div><!-- End Stats Item -->
-
-              <div class="col-lg-6">
-                <div class="stats-item d-flex">
-                  <i class="bi bi-headset flex-shrink-0"></i>
-                  <div>
-                    <span data-purecounter-start="0" data-purecounter-end="17520" data-purecounter-duration="1" class="purecounter"></span>
-                    <p><strong>Hours Of Support</strong></p>
-                  </div>
-                </div>
-              </div><!-- End Stats Item -->
-
-              <div class="col-lg-6">
-                <div class="stats-item d-flex">
-                  <i class="bi bi-people flex-shrink-0"></i>
-                  <div>
-                    <span data-purecounter-start="0" data-purecounter-end="28" data-purecounter-duration="1" class="purecounter"></span>
-                    <p><strong>Staff Support</strong></p>
-                  </div>
-                </div>
-              </div><!-- End Stats Item -->
-
+          <div class="col-lg-6">
+            <div class="stats-item d-flex">
+              <i class="bi bi-emoji-smile flex-shrink-0"></i>
+              <div>
+                <span data-purecounter-start="0" data-purecounter-end="232" data-purecounter-duration="1" class="purecounter"></span>
+                <p><strong>Happy Mitra</strong></p>
+              </div>
             </div>
+          </div><!-- End Stats Item -->
 
-          </div>
+          <div class="col-lg-6">
+            <div class="stats-item d-flex">
+              <i class="bi bi-journal-richtext flex-shrink-0"></i>
+              <div>
+                <span data-purecounter-start="0" data-purecounter-end="132" data-purecounter-duration="1" class="purecounter"></span>
+                <p><strong>Projects</strong></p>
+              </div>
+            </div>
+          </div><!-- End Stats Item -->
+
+          <div class="col-lg-6">
+            <div class="stats-item d-flex">
+              <i class="bi bi-headset flex-shrink-0"></i>
+              <div>
+                <!-- ubah id biar gampang ambil pakai JS -->
+                <span id="hoursSupport" class="purecounter"></span>
+                <p><strong>Hours Of Support</strong></p>
+              </div>
+            </div>
+          </div><!-- End Stats Item -->
+
+          <div class="col-lg-6">
+            <div class="stats-item d-flex">
+              <i class="bi bi-people flex-shrink-0"></i>
+              <div>
+                <span data-purecounter-start="0" data-purecounter-end="28" data-purecounter-duration="1" class="purecounter"></span>
+                <p><strong>Staff Support</strong></p>
+              </div>
+            </div>
+          </div><!-- End Stats Item -->
 
         </div>
 
       </div>
 
-    </section><!-- /Stats Section -->
+    </div>
+
+  </div>
+
+</section>
+    
+    <script>
+  function updateHoursSupport() {
+    const startDate = new Date("2023-06-01T00:00:00"); // mulai 1 Juni 2023
+    const now = new Date();
+    const diffMs = now - startDate;
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+
+    const el = document.getElementById("hoursSupport");
+    el.setAttribute("data-purecounter-end", diffHours);
+
+    // trigger ulang purecounter supaya animasi jalan
+    if (window.PureCounter) {
+      new PureCounter();
+    }
+  }
+
+  // jalanin pas page load
+  updateHoursSupport();
+  // update tiap jam biar angka terus naik
+  setInterval(updateHoursSupport, 60 * 60 * 1000);
+</script>
+    <!-- /Stats Section -->
 
     <!-- Call To Action Section -->
     <section id="call-to-action" class="call-to-action section dark-background">

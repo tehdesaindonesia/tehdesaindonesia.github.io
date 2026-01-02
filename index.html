@@ -126,9 +126,6 @@
           <ul>
             <li><a href="#hero" class="active">Beranda<br></a></li>
             <li><a href="#about">Tentang Kami</a></li>
-            <li><a href="#services">Layanan</a></li>
-            <li><a href="#portfolio">Galeri</a></li>
-            <li><a href="#team">Tim</a></li>
             <li><a href="#pricing">Paket Kemitraan</a></li>
             <li><a href="#faq">FAQ</a></li>
             <li><a href="#contact">Kontak</a></li>
@@ -1070,8 +1067,12 @@
     </div>
 
     <div class="container copyright text-center mt-4">
-      <p>© <span>Copyright</span> <strong class="px-1 sitename">Teh Desa Indonesia</strong> <span>All Rights Reserved</span></p>
-    </div>
+  <p>
+   Copyright © <span id="year"></span>
+    <strong class="px-1 sitename">Teh Desa Indonesia</strong>
+    <span>All Rights Reserved</span>
+  </p>
+</div>
 
   </footer>
 
@@ -1090,6 +1091,11 @@
   <script src="assets/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
   <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
   <script>
+
+  <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+
     /* To Disable Inspect Element */
      document.oncontextmenu = () => {
         return false

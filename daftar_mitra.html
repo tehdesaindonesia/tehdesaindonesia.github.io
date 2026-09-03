@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Undian Angka Peserta</title>
+<style>
+  :root{
+    --blue: #2c9701;
+    --blue-dark: #2c9701;
+    --bg: #eef1f5;
+    --card: #ffffff;
+    --border: #e1e5ea;
+    --text: #2b2f36;
+    --text-muted: #6b7280;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    padding:32px;
+    min-height:100vh;
+  }
+  .layout{
+    display:grid;
+    grid-template-columns: 420px 1fr;
+    gap:24px;
+    max-width:1400px;
+    margin:0 auto;
+  }
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    box-shadow: 0 2px 10px rgba(20,30,60,0.06);
+  }
+
+  /* LEFT PANEL */
+  .panel-left{
+    padding:20px;
+    align-self:start;
+  }
+  .header-bar{
+    background:var(--blue);
+    color:#fff;
+    font-weight:700;
+    font-size:17px;
+    text-align:center;
+    padding:14px 16px;
+    border-radius:10px;
+    margin-bottom:24px;
+    letter-spacing:0.2px;
+  }
+  .field-row{
+    display:flex;
+    gap:16px;
+    margin-bottom:8px;
+  }
+  .field{
+    flex:1;
+  }
+  .field label{
+    display:block;
+    font-size:13px;
+    font-weight:600;
+    color:#4b5563;
+    margin-bottom:8px;
+  }
+  .range-wrap{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  input[type="number"]{
+    width:100%;
+    padding:11px 12px;
+    border:1px solid #d6dbe3;
+    border-radius:8px;
+    font-size:15px;
+    color:var(--text);
+    outline:none;
+    transition:border-color .15s;
+  }
+  input[type="number"]:focus{
+    border-color:var(--blue);
+  }
+  .tilde{
+    color:#9aa1ab;
+    font-size:15px;
+    padding-top:22px;
+  }
+  .spacer{height:40px;}
+  .btn{
+    width:100%;
+    padding:13px 16px;
+    border-radius:9px;
+    border:none;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    transition: filter .15s, opacity .15s;
+  }
+  .btn:active{filter:brightness(0.93);}
+  .btn-primary{
+    background:var(--blue);
+    color:#fff;
+    margin-bottom:10px;
+  }
+  .btn-primary:disabled{
+    opacity:0.65;
+    cursor:not-allowed;
+  }
+  .btn-secondary{
+    background:#fff;
+    color:#374151;
+    border:1px solid #d6dbe3;
+  }
+  .btn-secondary:hover{ background:#f7f8fa; }
+  .btn-small{
+    padding:8px 14px;
+    font-size:13px;
+    width:auto;
+  }
+  .icon{ display:inline-flex; }
+
+  .error-msg{
+    color:#d93025;
+    font-size:12.5px;
+    margin:-2px 0 14px 2px;
+    min-height:16px;
+  }
+
+  /* RIGHT PANEL */
+  .panel-right{
+    min-height:520px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:40px;
+    position:relative;
+  }
+  .result-wrap{
+    text-align:center;
+  }
+  .result-label{
+    color:var(--text-muted);
+    font-size:16px;
+    margin-bottom:18px;
+  }
+  .result-number{
+    font-size:150px;
+    font-weight:800;
+    color:var(--blue);
+    line-height:1;
+    letter-spacing:2px;
+    min-height:150px;
+    font-variant-numeric: tabular-nums;
+  }
+  .result-number.placeholder{
+    color:#d3d8e0;
+    font-size:80px;
+  }
+  .result-number.rolling{
+    color:var(--blue-dark);
+  }
+  .result-sub{
+    margin-top:18px;
+    font-size:14px;
+    color:var(--text-muted);
+    min-height:20px;
+  }
+
+  /* BOTTOM PANEL */
+  .panel-bottom{
+    grid-column: 1 / -1;
+    padding:22px 24px;
+    margin-top:0;
+  }
+  .bottom-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:16px;
+  }
+  .bottom-head .count{
+    font-size:15px;
+    font-weight:600;
+    color:#374151;
+  }
+  .chips{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    min-height:20px;
+  }
+  .chip{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:#f1f6fe;
+    border:1px solid #d6e6fd;
+    color:#2c9701;
+    font-weight:600;
+    font-size:14px;
+    padding:7px 10px 7px 14px;
+    border-radius:20px;
+  }
+  .chip button{
+    border:none;
+    background:transparent;
+    cursor:pointer;
+    color:#8794a8;
+    font-size:14px;
+    line-height:1;
+    padding:2px;
+    display:flex;
+  }
+  .chip button:hover{ color:#d93025; }
+  .empty-note{
+    color:#9aa1ab;
+    font-size:13.5px;
+  }
+
+  @media (max-width: 880px){
+    .layout{ grid-template-columns: 1fr; }
+    .result-number{ font-size:100px; }
+  }
+
+  /* CONFETTI */
+  .confetti-layer{
+    position:fixed;
+    bottom:0;
+    width:10px;
+    height:10px;
+    pointer-events:none;
+    z-index:999;
+    overflow:visible;
+  }
+  #confettiLeft{ left:0; }
+  #confettiRight{ right:0; }
+  .confetti-piece{
+    position:absolute;
+    left:0;
+    bottom:0;
+    opacity:1;
+    border-radius:2px;
+    animation-name: confetti-burst;
+    animation-timing-function: cubic-bezier(.15,.7,.3,1);
+    animation-fill-mode: forwards;
+  }
+  @keyframes confetti-burst{
+    0%{
+      transform: translate(0,0) rotate(0deg);
+      opacity:1;
+    }
+    75%{
+      opacity:1;
+    }
+    100%{
+      transform: translate(var(--dx), var(--dy)) rotate(var(--rot));
+      opacity:0;
+    }
+  }
+
+  /* ===== DAFTAR NOMOR UNDIAN ===== */
+  .participant-card{margin-top:24px;background:#fff;border:1px solid var(--border);border-radius:14px;padding:22px;box-shadow:0 4px 18px rgba(0,0,0,.05)}
+  .participant-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+  .participant-head h2{margin:0;font-size:20px;color:var(--text)}
+  .participant-head p{margin:5px 0 0;color:#7b8490;font-size:13px}
+  .participant-search{width:280px;max-width:100%;padding:11px 13px;border:1px solid #d9dee5;border-radius:9px;font-size:14px;outline:none}
+  .participant-search:focus{border-color:var(--blue)}
+  .participant-table-wrap{overflow-x:auto}
+  .participant-table{width:100%;border-collapse:collapse;min-width:620px}
+  .participant-table th,.participant-table td{padding:11px 12px;border-bottom:1px solid #edf0f3;text-align:left;font-size:14px}
+  .participant-table th{background:#f7f8fa;font-weight:700;color:#555e69}
+  .participant-table th:first-child,.participant-table td:first-child{width:130px;text-align:center}
+  .participant-table th:last-child,.participant-table td:last-child{width:180px;text-align:center}
+  .participant-table tbody tr:hover{background:#fafbfc}
+  .participant-empty{text-align:center!important;color:#8a929d;padding:28px!important}
+  .participant-pagination{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:16px}
+  .participant-pagination button{border:1px solid #d9dee5;background:#fff;border-radius:8px;padding:8px 13px;cursor:pointer;font-weight:600}
+  .participant-pagination button:disabled{opacity:.45;cursor:not-allowed}
+  .participant-page-info{font-size:13px;color:#69727e;min-width:90px;text-align:center}
+  @media(max-width:600px){.participant-card{padding:16px}.participant-head h2{font-size:18px}.participant-search{width:100%}}
+</style>
+</head>
+<body>
+
+<div class="layout">
+</div>
+
+
+<div class="confetti-layer" id="confettiLeft"></div>
+<div class="confetti-layer" id="confettiRight"></div>
+
+
+<section class="participant-card" id="participantListCard">
+  <div class="participant-head">
+    <div>
+      <h2>Daftar Nomor Undian</h2>
+      <p id="participantSummary">Memuat data...</p>
+    </div>
+    <input class="participant-search" id="participantSearch" type="search" placeholder="Cari nomor atau nama mitra..." autocomplete="off">
+  </div>
+  <div class="participant-table-wrap">
+    <table class="participant-table">
+      <thead><tr><th>Nomor Undian</th><th>Nama Mitra</th><th>Jumlah Kesempatan</th></tr></thead>
+      <tbody id="participantTableBody"></tbody>
+    </table>
+  </div>
+  <div class="participant-pagination">
+    <button type="button" id="participantPrev">‹ Sebelumnya</button>
+    <span class="participant-page-info" id="participantPageInfo">Halaman 1 / 8</span>
+    <button type="button" id="participantNext">Berikutnya ›</button>
+  </div>
+</section>
+
+<script>
+const participantData = [{"nomor":"001","nama":"Aan_Mojokerto","kesempatan":6},{"nomor":"002","nama":"Abdullah Albaiti_Tulungagung","kesempatan":5},{"nomor":"003","nama":"Achmad Mifta_Trenggalek","kesempatan":1},{"nomor":"004","nama":"Agung Susanto_Semarang","kesempatan":16},{"nomor":"005","nama":"Ahmad Khoirudin_Madiun","kesempatan":5},{"nomor":"006","nama":"Alfiyah_Pekalongan","kesempatan":4},{"nomor":"007","nama":"Ali Mustofa (Kesamben)_Blitar","kesempatan":4},{"nomor":"008","nama":"Ali Mustofa (Ponggok)_Blitar","kesempatan":94},{"nomor":"009","nama":"Amalia_Wonosobo","kesempatan":14},{"nomor":"010","nama":"Amin Wahyu_Kab Semarang","kesempatan":1},{"nomor":"011","nama":"Anggita_Semarang","kesempatan":10},{"nomor":"012","nama":"Anik Dwi_Magetan","kesempatan":1},{"nomor":"013","nama":"Ardiana_Blitar","kesempatan":6},{"nomor":"014","nama":"Arfan_Ponorogo","kesempatan":4},{"nomor":"015","nama":"Arif Qomarudin_Madiun","kesempatan":2},{"nomor":"016","nama":"Asan Agus_Bojonegoro","kesempatan":2},{"nomor":"017","nama":"Aulia Safira_Bojonegoro","kesempatan":5},{"nomor":"018","nama":"Ayu Sukesi_Boyolali","kesempatan":13},{"nomor":"019","nama":"Bagus Vernanda_Ponorogo","kesempatan":4},{"nomor":"020","nama":"Cantika Canda_Ponorogo","kesempatan":22},{"nomor":"021","nama":"Cholix_Semarang","kesempatan":11},{"nomor":"022","nama":"Dadang_Madiun","kesempatan":4},{"nomor":"023","nama":"Danu_Batang","kesempatan":1},{"nomor":"024","nama":"Dedy_Mojokerto","kesempatan":3},{"nomor":"025","nama":"Deny_Ponorogo","kesempatan":2},{"nomor":"026","nama":"Desi Priani_Blitar","kesempatan":15},{"nomor":"027","nama":"Dewi Novitasari_Ponorogo","kesempatan":17},{"nomor":"028","nama":"Dian Nur Avita_Bojonegoro","kesempatan":3},{"nomor":"029","nama":"Dian Rusma_Pekalongan","kesempatan":3},{"nomor":"030","nama":"Didik Hadianto_Kediri","kesempatan":8},{"nomor":"031","nama":"Didik_Ponorogo","kesempatan":24},{"nomor":"032","nama":"Diki Noviadi_Lamongan","kesempatan":7},{"nomor":"033","nama":"Dimas_Tegal","kesempatan":7},{"nomor":"034","nama":"Duwi Ekowati_Madiun","kesempatan":1},{"nomor":"035","nama":"Dwi Santosa_Madiun","kesempatan":14},{"nomor":"036","nama":"Edy_Bojonegoro","kesempatan":5},{"nomor":"037","nama":"Eka Aldriana_Yogyakarta","kesempatan":1},{"nomor":"038","nama":"Eka S_Malang","kesempatan":23},{"nomor":"039","nama":"Eko Sarwanto_Kebumen","kesempatan":6},{"nomor":"040","nama":"Ellisa_Ngawi","kesempatan":8},{"nomor":"041","nama":"Elsa Kurnia_Kediri","kesempatan":7},{"nomor":"042","nama":"Endah_Kudus","kesempatan":2},{"nomor":"043","nama":"Endyk_Kendal","kesempatan":5},{"nomor":"044","nama":"Erinda_Blitar","kesempatan":4},{"nomor":"045","nama":"Erna_Gresik","kesempatan":4},{"nomor":"046","nama":"Fadhek_Blitar","kesempatan":2},{"nomor":"047","nama":"Faizun_Tegal","kesempatan":12},{"nomor":"048","nama":"Faradella_Gresik","kesempatan":23},{"nomor":"049","nama":"Faris Firmansyah_Malang","kesempatan":7},{"nomor":"050","nama":"Fathal Hilmi_Madiun","kesempatan":3},{"nomor":"051","nama":"Fatkhatur_Pekalongan","kesempatan":11},{"nomor":"052","nama":"Fauzan_Tulungagung","kesempatan":11},{"nomor":"053","nama":"Fifi_Lamongan","kesempatan":7},{"nomor":"054","nama":"Fika Puasari_Kediri","kesempatan":2},{"nomor":"055","nama":"Fike_Malang","kesempatan":3},{"nomor":"056","nama":"Firdatuszahra_Pamekasan","kesempatan":13},{"nomor":"057","nama":"Fitri Wulandari_Blitar","kesempatan":15},{"nomor":"058","nama":"Fitriani_Magelang","kesempatan":40},{"nomor":"059","nama":"Fuji_Magetan","kesempatan":16},{"nomor":"060","nama":"Galih_Batang","kesempatan":7},{"nomor":"061","nama":"Gati Dyah_Lamongan","kesempatan":3},{"nomor":"062","nama":"Gayatri_Sukoharjo","kesempatan":2},{"nomor":"063","nama":"Ghafar_Magelang","kesempatan":2},{"nomor":"064","nama":"Gun Kunwati_Magelang","kesempatan":14},{"nomor":"065","nama":"Haris_Temanggung","kesempatan":11},{"nomor":"066","nama":"Hasin Abdullah_Pamekasan","kesempatan":4},{"nomor":"067","nama":"Hernanda Yolan_Jombang","kesempatan":4},{"nomor":"068","nama":"Ida Purniawati_Jakarta","kesempatan":5},{"nomor":"069","nama":"Ifa_Blitar","kesempatan":7},{"nomor":"070","nama":"Ilham Esa_Kediri","kesempatan":1},{"nomor":"071","nama":"Imam_Madiun","kesempatan":1},{"nomor":"072","nama":"Imam_Semarang","kesempatan":2},{"nomor":"073","nama":"Inayatul_Mojokerto","kesempatan":12},{"nomor":"074","nama":"Indah Lestari_Malang","kesempatan":7},{"nomor":"075","nama":"Indarsih_Blitar","kesempatan":1},{"nomor":"076","nama":"Intan Kartika_Semarang","kesempatan":1},{"nomor":"077","nama":"Isma_Magelang","kesempatan":23},{"nomor":"078","nama":"Ita_Malang","kesempatan":3},{"nomor":"079","nama":"Itqon Faiz_Salatiga","kesempatan":4},{"nomor":"080","nama":"Jarwanto_Blitar","kesempatan":5},{"nomor":"081","nama":"Kanti Rahayu_Jombang","kesempatan":8},{"nomor":"082","nama":"Khoirul Anam_Jombang","kesempatan":26},{"nomor":"083","nama":"Laila Fitriana_Bojonegoro","kesempatan":5},{"nomor":"084","nama":"Laila Nur Afifah_Tuban","kesempatan":1},{"nomor":"085","nama":"Lia_Kediri","kesempatan":1},{"nomor":"086","nama":"Lina_Pekalongan","kesempatan":6},{"nomor":"087","nama":"Lynda Dewi_Mojokerto","kesempatan":16},{"nomor":"088","nama":"Marcela Dwi_Blitar","kesempatan":19},{"nomor":"089","nama":"Maulidia Rohmatul_Blitar","kesempatan":15},{"nomor":"090","nama":"Maya Dwi Yasica_Blitar","kesempatan":113},{"nomor":"091","nama":"Misbahul_Kediri","kesempatan":10},{"nomor":"092","nama":"Musnaeni_Pemalang","kesempatan":6},{"nomor":"093","nama":"Nancy_Semarang","kesempatan":40},{"nomor":"094","nama":"Naning Farida_Mojokerto","kesempatan":8},{"nomor":"095","nama":"Nina Nur_Jepara","kesempatan":1},{"nomor":"096","nama":"Ninda Silviani_Tegal","kesempatan":5},{"nomor":"097","nama":"Nining Triana_Mojokerto","kesempatan":2},{"nomor":"098","nama":"Nova_Tegal","kesempatan":6},{"nomor":"099","nama":"Nurhayati Shigeno_Kediri","kesempatan":7},{"nomor":"100","nama":"Nuriyana Bahari_Kuningan","kesempatan":3},{"nomor":"101","nama":"Nurul Fatonah_Surabaya","kesempatan":1},{"nomor":"102","nama":"Nurul Khomaryah_Grobogan","kesempatan":4},{"nomor":"103","nama":"Nurul Mudrikah (Azizah)_Malang","kesempatan":8},{"nomor":"104","nama":"Nurul Mudrikah (Azka)_Malang","kesempatan":11},{"nomor":"105","nama":"Nurul Mudrikah (Jefri)_Malang","kesempatan":6},{"nomor":"106","nama":"Nurul Mudrikah (Wina)_Malang","kesempatan":9},{"nomor":"107","nama":"Nurul Mudrikah (Zulva)_Malang","kesempatan":10},{"nomor":"108","nama":"Okky Arianto_Mojokerto","kesempatan":5},{"nomor":"109","nama":"Pandu Wisnu_Blitar","kesempatan":5},{"nomor":"110","nama":"Prio_Blitar","kesempatan":7},{"nomor":"111","nama":"Priyanti_Madiun","kesempatan":7},{"nomor":"112","nama":"Priyanto_Malang","kesempatan":7},{"nomor":"113","nama":"Putri Mayangsari_Batang","kesempatan":3},{"nomor":"114","nama":"Rafita_Magelang","kesempatan":4},{"nomor":"115","nama":"Rahajeng Mufida_Tulungagung","kesempatan":8},{"nomor":"116","nama":"Reynard_Semarang","kesempatan":2},{"nomor":"117","nama":"Rindang_Magetan","kesempatan":3},{"nomor":"118","nama":"Riyanti_Kab Semarang","kesempatan":1},{"nomor":"119","nama":"Rizal Aji_Magelang","kesempatan":30},{"nomor":"120","nama":"Rizky Faissa_Bandung Barat","kesempatan":5},{"nomor":"121","nama":"Rizky Nugroho_Trenggalek","kesempatan":4},{"nomor":"122","nama":"Romlah_Pasuruan","kesempatan":8},{"nomor":"123","nama":"Samikun_Ponorogo","kesempatan":4},{"nomor":"124","nama":"Sandra_Magetan","kesempatan":7},{"nomor":"125","nama":"Sandy Saputra_Kediri","kesempatan":6},{"nomor":"126","nama":"Santoso_Semarang","kesempatan":10},{"nomor":"127","nama":"Selviana_Tegal","kesempatan":2},{"nomor":"128","nama":"Septia Eka_Trenggalek","kesempatan":33},{"nomor":"129","nama":"Shella_Grobogan","kesempatan":7},{"nomor":"130","nama":"Shirley_Semarang","kesempatan":18},{"nomor":"131","nama":"Sifa Fauziah_Kediri","kesempatan":3},{"nomor":"132","nama":"Sindy_Tegal","kesempatan":4},{"nomor":"133","nama":"Siti Maryati_Magelang","kesempatan":4},{"nomor":"134","nama":"Sundari_Blitar","kesempatan":3},{"nomor":"135","nama":"Suwinarti_Tuban","kesempatan":9},{"nomor":"136","nama":"Syarif Hidayatullah_Semarang","kesempatan":7},{"nomor":"137","nama":"Taproji_Pemalang","kesempatan":4},{"nomor":"138","nama":"Tasya Selly_Ngawi","kesempatan":2},{"nomor":"139","nama":"Tatang_Bandung","kesempatan":9},{"nomor":"140","nama":"Tias_Tegal","kesempatan":31},{"nomor":"141","nama":"Tri Hakim_Magelang","kesempatan":2},{"nomor":"142","nama":"Tri_Ngawi","kesempatan":2},{"nomor":"143","nama":"Triana_Ponorogo","kesempatan":3},{"nomor":"144","nama":"Tyas Pangesti Aji_Sidoarjo","kesempatan":3},{"nomor":"145","nama":"Ufuq_Blitar","kesempatan":4},{"nomor":"146","nama":"Vinda_Kendal","kesempatan":4},{"nomor":"147","nama":"Wahyudi_Ponorogo","kesempatan":5},{"nomor":"148","nama":"Winardi_Ngawi","kesempatan":7},{"nomor":"149","nama":"Yaya_Semarang","kesempatan":8},{"nomor":"150","nama":"Yudi_Magetan","kesempatan":2},{"nomor":"151","nama":"Yuli_Mojokerto","kesempatan":8},{"nomor":"152","nama":"Yuliasih_Bojonegoro","kesempatan":4},{"nomor":"153","nama":"Yuliono_Blitar","kesempatan":21},{"nomor":"154","nama":"Yusi Intan_Kediri","kesempatan":27},{"nomor":"155","nama":"Yusron_Madiun","kesempatan":4},{"nomor":"156","nama":"Zelli Kusumaningrum_Trenggalek","kesempatan":10}];
+const participantTableBody = document.getElementById('participantTableBody');
+const participantSearch = document.getElementById('participantSearch');
+const participantSummary = document.getElementById('participantSummary');
+const participantPrev = document.getElementById('participantPrev');
+const participantNext = document.getElementById('participantNext');
+const participantPageInfo = document.getElementById('participantPageInfo');
+let participantPage = 1;
+const participantPageSize = 20;
+function escapeParticipantHtml(value){
+  return String(value).replace(/[&<>"']/g, function(ch){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[ch];
+  });
+}
+function renderParticipantTable(){
+  const q=(participantSearch.value||'').trim().toLowerCase();
+  const filtered=participantData.filter(item=>item.nomor.toLowerCase().includes(q)||item.nama.toLowerCase().includes(q));
+  const totalPages=Math.max(1,Math.ceil(filtered.length/participantPageSize));
+  if(participantPage>totalPages) participantPage=totalPages;
+  const start=(participantPage-1)*participantPageSize;
+  const pageRows=filtered.slice(start,start+participantPageSize);
+  participantTableBody.innerHTML=pageRows.length ? pageRows.map(item=>'<tr><td><strong>'+item.nomor+'</strong></td><td>'+escapeParticipantHtml(item.nama)+'</td><td>'+item.kesempatan+'</td></tr>').join('') : '<tr><td colspan="3" class="participant-empty">Data tidak ditemukan.</td></tr>';
+  const totalKesempatan=participantData.reduce((sum,item)=>sum+item.kesempatan,0);
+  participantSummary.textContent=filtered.length+' nomor ditampilkan • '+totalKesempatan.toLocaleString('id-ID')+' total kesempatan';
+  participantPageInfo.textContent='Halaman '+participantPage+' / '+totalPages;
+  participantPrev.disabled=participantPage<=1;
+  participantNext.disabled=participantPage>=totalPages;
+}
+participantSearch.addEventListener('input',function(){participantPage=1;renderParticipantTable();});
+participantPrev.addEventListener('click',function(){if(participantPage>1){participantPage--;renderParticipantTable();}});
+participantNext.addEventListener('click',function(){if(participantPage<Math.ceil(participantData.length/participantPageSize)){participantPage++;renderParticipantTable();}});
+renderParticipantTable();
+
+(function(){
+  const confettiColors = ['#ff595e','#ffca3a','#8ac926','#1982c4','#6a4c93','#ff924c','#00b4d8'];
+  const confettiLeft = document.getElementById('confettiLeft');
+  const confettiRight = document.getElementById('confettiRight');
+
+  function spawnConfettiPiece(container, side){
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+
+    const size = 6 + Math.random()*7;
+    piece.style.width = size + 'px';
+    piece.style.height = (size*0.45) + 'px';
+    piece.style.background = confettiColors[Math.floor(Math.random()*confettiColors.length)];
+
+    const spreadX = 150 + Math.random()*450;
+    const dx = side === 'left' ? spreadX : -spreadX;
+    const dy = -(200 + Math.random()*550);
+    const rot = (Math.random()*720 - 360) + 'deg';
+    piece.style.setProperty('--dx', dx + 'px');
+    piece.style.setProperty('--dy', dy + 'px');
+    piece.style.setProperty('--rot', rot);
+
+    const duration = 900 + Math.random()*700;
+    piece.style.animationDuration = duration + 'ms';
+
+    container.appendChild(piece);
+    setTimeout(() => piece.remove(), duration + 50);
+  }
+
+  function launchConfetti(){
+    const totalPieces = 55;
+    for(let i=0; i<totalPieces; i++){
+      setTimeout(() => spawnConfettiPiece(confettiLeft, 'left'), Math.random()*350);
+      setTimeout(() => spawnConfettiPiece(confettiRight, 'right'), Math.random()*350);
+    }
+  }
+
+  const minInput = document.getElementById('minInput');
+  const maxInput = document.getElementById('maxInput');
+  const errorMsg = document.getElementById('errorMsg');
+  const runBtn = document.getElementById('runBtn');
+  const resetFormBtn = document.getElementById('resetFormBtn');
+  const resetHistoryBtn = document.getElementById('resetHistoryBtn');
+  const resultNumber = document.getElementById('resultNumber');
+  const resultSub = document.getElementById('resultSub');
+  const historyCount = document.getElementById('historyCount');
+  const chipsWrap = document.getElementById('chipsWrap');
+  const emptyNote = document.getElementById('emptyNote');
+
+  let drawnNumbers = [];  
+  let isRolling = false;
+
+  const TOTAL_DURATION = 5000; 
+
+  let audioCtx = null;
+  function getCtx(){
+    if(!audioCtx){
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if(audioCtx.state === 'suspended'){ audioCtx.resume(); }
+    return audioCtx;
+  }
+
+  function playDrumHit(volume){
+    const ctx = getCtx();
+    const bufferSize = ctx.sampleRate * 0.08;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for(let i=0;i<bufferSize;i++){
+      data[i] = (Math.random()*2 - 1) * Math.pow(1 - i/bufferSize, 2);
+    }
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+
+    const bandpass = ctx.createBiquadFilter();
+    bandpass.type = 'bandpass';
+    bandpass.frequency.value = 180;
+    bandpass.Q.value = 0.9;
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(volume, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.09);
+
+    noise.connect(bandpass).connect(gain).connect(ctx.destination);
+    noise.start();
+    noise.stop(ctx.currentTime + 0.1);
+
+    const osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(110, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(45, ctx.currentTime + 0.08);
+    const oscGain = ctx.createGain();
+    oscGain.gain.setValueAtTime(volume*0.9, ctx.currentTime);
+    oscGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+    osc.connect(oscGain).connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.1);
+  }
+
+  function playFinalHit(){
+    const ctx = getCtx();
+    const bufferSize = ctx.sampleRate * 0.5;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for(let i=0;i<bufferSize;i++){
+      data[i] = (Math.random()*2 - 1) * Math.pow(1 - i/bufferSize, 1.5);
+    }
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+    const hp = ctx.createBiquadFilter();
+    hp.type = 'highpass';
+    hp.frequency.value = 4000;
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.35, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+    noise.connect(hp).connect(gain).connect(ctx.destination);
+    noise.start();
+    noise.stop(ctx.currentTime + 0.5);
+  }
+
+  function getPool(min, max){
+    const pool = [];
+    for(let i=min; i<=max; i++){
+      if(!drawnNumbers.includes(i)) pool.push(i);
+    }
+    return pool;
+  }
+
+  function validateRange(){
+    const min = parseInt(minInput.value, 10);
+    const max = parseInt(maxInput.value, 10);
+    if(isNaN(min) || isNaN(max)){
+      errorMsg.textContent = 'Nilai minimum dan maksimum harus berupa angka.';
+      return null;
+    }
+    if(min >= max){
+      errorMsg.textContent = 'Nilai minimum harus lebih kecil dari nilai maksimum.';
+      return null;
+    }
+    errorMsg.textContent = '';
+    return {min, max};
+  }
+
+  function updateHistoryUI(){
+    const range = validateRange();
+    const total = range ? (range.max - range.min + 1) : 0;
+    historyCount.textContent = `Telah diundi (${drawnNumbers.length}/${total} item)`;
+
+    chipsWrap.innerHTML = '';
+    if(drawnNumbers.length === 0){
+      chipsWrap.appendChild(emptyNote);
+      return;
+    }
+    drawnNumbers.forEach(num => {
+      const chip = document.createElement('div');
+      chip.className = 'chip';
+      chip.innerHTML = `<span>${num}</span>`;
+      const btn = document.createElement('button');
+      btn.innerHTML = '&times;';
+      btn.title = 'Hapus dari riwayat';
+      btn.addEventListener('click', () => {
+        if(isRolling) return;
+        drawnNumbers = drawnNumbers.filter(n => n !== num);
+        updateHistoryUI();
+      });
+      chip.appendChild(btn);
+      chipsWrap.appendChild(chip);
+    });
+  }
+
+  function setRunningState(running){
+    isRolling = running;
+    runBtn.disabled = running;
+    runBtn.innerHTML = running
+      ? '<span class="icon">◔</span> Mengundi...'
+      : '<span class="icon">▶</span> Jalankan';
+    resetHistoryBtn.disabled = running;
+    resetFormBtn.disabled = running;
+  }
+
+  function runDraw(){
+    const range = validateRange();
+    if(!range) return;
+    const { min, max } = range;
+
+    const pool = getPool(min, max);
+    if(pool.length === 0){
+      errorMsg.textContent = 'Semua angka pada rentang ini sudah diundi.';
+      return;
+    }
+
+    const finalNumber = pool[Math.floor(Math.random() * pool.length)];
+
+    setRunningState(true);
+    resultSub.textContent = '';
+    resultNumber.classList.remove('placeholder');
+    resultNumber.classList.add('rolling');
+
+    const startTime = performance.now();
+    let lastTickTime = startTime;
+
+    function tick(now){
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / TOTAL_DURATION, 1);
+      const eased = Math.pow(progress, 3);
+      const currentInterval = 50 + eased * 210;
+
+      if(now - lastTickTime >= currentInterval){
+        lastTickTime = now;
+        if(progress < 1){
+          const randomShown = min + Math.floor(Math.random() * (max - min + 1));
+          resultNumber.textContent = randomShown;
+          const vol = 0.18 + (1-progress) * 0.12;
+          playDrumHit(vol);
+        }
+      }
+
+      if(elapsed < TOTAL_DURATION){
+        requestAnimationFrame(tick);
+      }else{
+        resultNumber.textContent = finalNumber;
+        resultNumber.classList.remove('rolling');
+        playTrumpet();
+        launchConfetti();
+        drawnNumbers.push(finalNumber);
+        updateHistoryUI();
+        resultSub.textContent = 'Angka telah ditetapkan.';
+        setRunningState(false);
+      }
+    }
+    requestAnimationFrame(tick);
+  }
+
+  runBtn.addEventListener('click', () => {
+    if(isRolling) return;
+    getCtx();
+    trumpetAudio.play().then(()=>{ trumpetAudio.pause(); trumpetAudio.currentTime = 0; }).catch(()=>{});
+    runDraw();
+  });
+
+  resetFormBtn.addEventListener('click', () => {
+    if(isRolling) return;
+    minInput.value = 1;
+    maxInput.value = 156;
+    errorMsg.textContent = '';
+    updateHistoryUI();
+  });
+
+  resetHistoryBtn.addEventListener('click', () => {
+    if(isRolling) return;
+    drawnNumbers = [];
+    resultNumber.textContent = '--';
+    resultNumber.classList.add('placeholder');
+    resultNumber.classList.remove('rolling');
+    resultSub.textContent = '';
+    updateHistoryUI();
+  });
+
+  [minInput, maxInput].forEach(el=>{
+    el.addEventListener('input', () => {
+      drawnNumbers = drawnNumbers.filter(n => {
+        const min = parseInt(minInput.value,10);
+        const max = parseInt(maxInput.value,10);
+        if(isNaN(min)||isNaN(max)) return true;
+        return n >= min && n <= max;
+      });
+      updateHistoryUI();
+    });
+  });
+
+  updateHistoryUI();
+})();
+</script>
+
+</body>
+</html>
